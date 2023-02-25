@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { CreateUserDTO } from './dto/create-user.dto';
+import { UpdateUserDTO } from './dto/update-user.dto';
 
 export interface User {
   firstName: string;
@@ -16,20 +18,20 @@ export class UserService {
     return this.users;
   }
 
-  getById(userId: number) {
-    return this.users[userId - 1];
+  getById(id: number) {
+    return this.users[id - 1];
   }
 
-  create(user: User) {
+  create(user: CreateUserDTO) {
     this.users.push(user);
     return user;
   }
 
-  update(userId: number, user: User) {
-    return this.getById(userId) ? (this.users[userId - 1] = user) : false;
+  update(id: number, user: UpdateUserDTO) {
+    return this.getById(id) ? (this.users[id - 1] = user) : false;
   }
 
-  delete(userId: number) {
-    return !!this.users.splice(userId - 1, 1).length;
+  delete(id: number) {
+    return !!this.users.splice(id - 1, 1).length;
   }
 }
