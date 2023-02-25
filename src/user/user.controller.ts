@@ -18,7 +18,7 @@ interface CustomRequest<T> extends Request {
   body: T;
 }
 
-@Controller('/user')
+@Controller('user')
 export class UserController {
   users = [
     { firstName: 'Manu', lastName: 'Kem' },
