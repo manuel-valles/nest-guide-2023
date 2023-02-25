@@ -10,8 +10,8 @@ export interface User {
 @Injectable()
 export class UserService {
   private users = [
-    { firstName: 'Manu', lastName: 'Kem' },
-    { firstName: 'Mar', lastName: 'San' },
+    { firstName: 'Manu', lastName: 'Kem', email: 'mk@mk.com' },
+    { firstName: 'Mar', lastName: 'San', email: 'ms@ms.com' },
   ];
 
   get() {
