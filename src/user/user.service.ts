@@ -11,29 +11,24 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-  private users = [
-    { firstName: 'Manu', lastName: 'Kem', email: 'mk@mk.com' },
-    { firstName: 'Mar', lastName: 'San', email: 'ms@ms.com' },
-  ];
 
-  async get() {
+  get() {
     return this.userRepository.find();
   }
 
   getById(id: number) {
-    return this.users[id - 1];
+    return this.userRepository.findOneBy({ id });
   }
 
   create(user: CreateUserDTO) {
-    this.users.push(user);
-    return user;
+    return this.userRepository.save(user);
   }
 
   update(id: number, user: UpdateUserDTO) {
-    return this.getById(id) ? (this.users[id - 1] = user) : false;
+    return this.userRepository.update(id, user);
   }
 
   delete(id: number) {
-    return !!this.users.splice(id - 1, 1).length;
+    return this.userRepository.delete(id);
   }
 }

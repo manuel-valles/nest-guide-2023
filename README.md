@@ -77,7 +77,7 @@ A quick guide for NestJS | February 2023
       ],
     ```
 
-  - Update the tests ([docs](https://docs.nestjs.com/techniques/database#testing))
+  - Update the tests ([docs](https://docs.nestjs.com/techniques/database#testing)):
 
     ```ts
       // *.spec.ts
