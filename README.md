@@ -90,3 +90,13 @@ A quick guide for NestJS | February 2023
       ],
 
     ```
+
+- To use crossed-services you need to export it from the original module and import it in the desired one, i.e.:
+
+  ```ts
+  // user.module.ts
+    exports: [UserService],
+
+  // auth.module.ts
+    imports: [UserModule], // UserModule just makes the UserService available, nothing else
+  ```

@@ -20,6 +20,10 @@ export class UserService {
     return this.userRepository.findOneBy({ id });
   }
 
+  getByEmail(email: string) {
+    return this.userRepository.findOneBy({ email });
+  }
+
   create(user: CreateUserDTO) {
     return this.userRepository.save(user);
   }
