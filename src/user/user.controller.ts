@@ -8,37 +8,27 @@ import {
   Req,
 } from '@nestjs/common';
 import { Request } from 'express';
-
-interface User {
-  firstName: string;
-  lastName: string;
-}
-
+import { User, UserService } from './user.service';
 interface CustomRequest<T> extends Request {
   body: T;
 }
 
 @Controller('user')
 export class UserController {
-  users = [
-    { firstName: 'Manu', lastName: 'Kem' },
-    { firstName: 'Mar', lastName: 'San' },
-  ];
-
+  constructor(private userService: UserService) {}
   @Get()
   getUsers() {
-    return this.users;
+    return this.userService.get();
   }
 
   @Get('/:userId')
   getUser(@Param() params: { userId: number }) {
-    return this.users[params.userId - 1];
+    return this.userService.getById(params.userId);
   }
 
   @Post()
-  store(@Req() { body: user }: CustomRequest<User>) {
-    this.users.push(user);
-    return user;
+  createUser(@Req() { body: user }: CustomRequest<User>) {
+    return this.userService.create(user);
   }
 
   @Patch('/:userId')
@@ -46,13 +36,11 @@ export class UserController {
     @Param() params: { userId: number },
     @Req() { body: user }: CustomRequest<User>,
   ) {
-    const { userId } = params;
-
-    return this.getUser({ userId }) ? (this.users[userId - 1] = user) : false;
+    return this.userService.update(params.userId, user);
   }
 
   @Delete('/:userId')
   deleteUser(@Param() params: { userId: number }) {
-    return !!this.users.splice(params.userId - 1, 1).length;
+    return this.userService.delete(params.userId);
   }
 }
