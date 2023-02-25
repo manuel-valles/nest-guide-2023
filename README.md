@@ -37,6 +37,56 @@ A quick guide for NestJS | February 2023
   - Bind the corresponding [pipes](https://docs.nestjs.com/pipes):
 
     ```ts
-      // user-controller.ts
+      // user.controller.ts
       @Param('id', ParseIntPipe) id: number
+    ```
+
+- To integrate with any [DB](https://docs.nestjs.com/techniques/database), Nest provides the `@nestjs/typeorm` package (_Object Relational Mapper (ORM)_):
+
+  - Postgres: `yarn add -D @nestjs/typeorm typeorm pg`
+  - Create the required entities using the `@Entity()` decorator from `typeorm`
+  - Inject the repository in the service:
+
+    ```ts
+      // user.service.ts
+      constructor(
+        @InjectRepository(User)
+        private userRepository: Repository<User>,
+      ) {}
+    ```
+
+  - Add the required dependencies in modules:
+
+    ```ts
+      // user.module.ts
+      imports: [TypeOrmModule.forFeature([User])],
+
+      // app.module.ts
+      imports: [
+        UserModule,
+        TypeOrmModule.forRoot({
+          type: 'postgres',
+          host: 'localhost',
+          port: 25432,
+          username: 'postgres',
+          password: 'pass',
+          database: 'my-app',
+          entities: [User],
+          synchronize: process.env.NODE_ENV !== 'production',
+        }),
+      ],
+    ```
+
+  - Update the tests ([docs](https://docs.nestjs.com/techniques/database#testing))
+
+    ```ts
+      // *.spec.ts
+      providers: [
+        UserService,
+        {
+          provide: getRepositoryToken(User),
+          useValue: Repository<User>,
+        },
+      ],
+
     ```

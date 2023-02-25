@@ -1,21 +1,23 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
-
-export interface User {
-  firstName: string;
-  lastName: string;
-}
+import { User } from './entity/user.entity';
 
 @Injectable()
 export class UserService {
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
   private users = [
     { firstName: 'Manu', lastName: 'Kem', email: 'mk@mk.com' },
     { firstName: 'Mar', lastName: 'San', email: 'ms@ms.com' },
   ];
 
-  get() {
-    return this.users;
+  async get() {
+    return this.userRepository.find();
   }
 
   getById(id: number) {

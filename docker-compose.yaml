@@ -1,0 +1,24 @@
+version: '3.9'
+
+networks:
+  nest_db:
+    name: nest_db
+
+volumes:
+  postgres_data:
+    name: nest_postgress_data
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: nest-postgres-db
+    networks:
+      - nest_db
+    ports:
+      - '25432:5432'
+    environment:
+      POSTGRES_DB: my-app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
