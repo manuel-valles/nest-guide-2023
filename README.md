@@ -163,3 +163,8 @@ _NOTE_: To be able to use crossed-services you need to export it from the origin
     }
   }
   ```
+
+`JWT functionality` can be achieved with:
+
+- `$ yarn add @nestjs/jwt passport-jwt`
+- `$ yarn add -D @types/passport-jwt`
