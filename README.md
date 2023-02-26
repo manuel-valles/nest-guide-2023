@@ -168,3 +168,62 @@ _NOTE_: To be able to use crossed-services you need to export it from the origin
 
 - `$ yarn add @nestjs/jwt passport-jwt`
 - `$ yarn add -D @types/passport-jwt`
+- Update module, controller and service:
+
+  ```ts
+    // auth.module.ts
+    imports: [
+      ...
+      ConfigModule,
+      JwtModule.registerAsync({
+        inject: [ConfigService],
+        useFactory: async (configService: ConfigService) =>
+          configService.get('jwt'),
+      }),
+    ],
+
+    // auth.service.ts
+    constructor(
+      private userService: UserService,
+      private jwtService: JwtService,
+    ) {}
+    ...
+    async login(user: any) {
+      const payload = { email: user.email, sub: user.id };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    }
+
+    // auth.controller.ts
+    constructor(private authService: AuthService) {}
+    ...
+    async login(@Req() { user }: Request) {
+      return this.authService.login(user);
+    }
+  ```
+
+- Finally you can protect the endpoints by requiring a valid JWT be present on the request by adding a `JWT Strategy`:
+
+  ```ts
+  // auth.module.ts
+  providers: [AuthService, LocalStrategy, JwtStrategy],
+
+  // jwt.strategy.ts
+  @Injectable()
+  export class JwtStrategy extends PassportStrategy(Strategy) {
+    constructor(private configService: ConfigService) {
+      super({
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        ignoreExpiration: false,
+        secretOrKey: configService.get<string>('jwt.secret'),
+      });
+    }
+
+    async validate(payload: any) {
+      return { id: payload.sub, email: payload.email };
+    }
+  }
+  ```
+
+  _NOTE_: An example of this implementation can be found under `src/profile`

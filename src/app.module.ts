@@ -4,6 +4,7 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ProfileModule } from './profile/profile.module';
 import configuration from './config';
 
 @Module({
@@ -11,6 +12,7 @@ import configuration from './config';
   imports: [
     AuthModule,
     UserModule,
+    ProfileModule,
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
