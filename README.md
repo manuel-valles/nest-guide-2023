@@ -144,3 +144,15 @@ A quick guide for NestJS | February 2023
       return this.authService.validateUser(email, password);
     }
     ```
+
+    **IMPORTANT**: The `AuthController` can be simplified since `Passport` handles the request, and now the `user` will be included in it.
+
+    ```ts
+    export class AuthController {
+      @UseGuards(AuthGuard('local'))
+      @Post('/login')
+      async login(@Req() { user }: Request) {
+        return user;
+      }
+    }
+    ```
