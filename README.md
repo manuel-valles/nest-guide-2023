@@ -16,7 +16,7 @@ A quick guide for NestJS | February 2023
 
 - To add [validation](https://docs.nestjs.com/techniques/validation) to the requests:
 
-  - `$ yarn add -D class-validator class-transformer`
+  - `$ yarn add class-validator class-transformer`
     ```ts
     // main.ts
     app.useGlobalPipes(
@@ -43,7 +43,7 @@ A quick guide for NestJS | February 2023
 
 - To integrate with any [DB](https://docs.nestjs.com/techniques/database), Nest provides the `@nestjs/typeorm` package (_Object Relational Mapper (ORM)_):
 
-  - Postgres: `yarn add -D @nestjs/typeorm typeorm pg`
+  - Postgres: `yarn add @nestjs/typeorm typeorm pg`
   - Create the required entities using the `@Entity()` decorator from `typeorm`
   - Inject the repository in the service:
 
@@ -100,3 +100,47 @@ A quick guide for NestJS | February 2023
   // auth.module.ts
     imports: [UserModule], // UserModule just makes the UserService available, nothing else
   ```
+
+- To handle [authentication](https://docs.nestjs.com/security/authentication), `Passport` is a straightforward library that has a rich ecosystem of strategies that implement various authentication mechanisms:
+
+  - `$ yarn add @nestjs/passport passport passport-local`
+  - `$ yarn add -D @types/passport-local`
+  - Create a `strategy`:
+
+    ```ts
+    // user.module.ts
+    @Injectable()
+    export class LocalStrategy extends PassportStrategy(Strategy) {
+      constructor(private authService: AuthService) {
+        super({ usernameField: 'email' });
+      }
+
+      async validate(username: string, password: string): Promise<any> {
+        const user = await this.authService.validateUser(username, password);
+        if (!user) {
+          throw new UnauthorizedException();
+        }
+        return user;
+      }
+    }
+    ```
+
+    _NOTE_: `Passport-local` strategy by default expects `username` and `password` in the request body. Pass an options object to specify different property names, for example: `super({ usernameField: 'email' })`
+
+  - Create an `AuthService` (that includes the controller business logic), and update module and controller:
+
+    ```ts
+    // auth.module.ts
+    imports: [UserModule, PassportModule],
+    providers: [AuthService, LocalStrategy],
+
+
+    // auth.controller.ts
+    constructor(private authService: AuthService) {}
+
+    @UseGuards(AuthGuard('local'))
+    @Post('/login')
+    async login(@Body() { email, password }: LoginDTO) {
+      return this.authService.validateUser(email, password);
+    }
+    ```
